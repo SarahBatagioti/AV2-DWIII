@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Documento;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.modelo.dto.documento.DocumentoDTO;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
 
@@ -16,7 +17,7 @@ public class CadastradorDocumentoServico {
 
     public Documento cadastrar(Long clienteId, DocumentoDTO dto){
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         Documento documento = new Documento();
         documento.setTipo(dto.getTipo());

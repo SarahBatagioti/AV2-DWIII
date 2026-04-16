@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
 
 @Service
@@ -14,10 +15,10 @@ public class RemovedorEnderecoServico {
 
     public void remover(Long clienteId) {
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         if (cliente.getEndereco() == null) {
-            throw new IllegalArgumentException("Endereco nao encontrado para este cliente");
+            throw new RecursoNaoEncontradoException("Endereco nao encontrado para este cliente");
         }
 
         cliente.setEndereco(null);

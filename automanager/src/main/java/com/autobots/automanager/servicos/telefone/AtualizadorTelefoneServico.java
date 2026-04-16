@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Telefone;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.modelo.atualizadores.telefone.TelefoneAtualizador;
 import com.autobots.automanager.modelo.dto.telefone.TelefoneDTO;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
@@ -19,12 +20,12 @@ public class AtualizadorTelefoneServico {
 
     public Telefone atualizar(Long clienteId, Long telefoneId, TelefoneDTO dto) {
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         Telefone telefoneExistente = cliente.getTelefones().stream()
             .filter(tel -> telefoneId.equals(tel.getId()))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Telefone nao encontrado neste cliente"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Telefone nao encontrado neste cliente"));
 
         Telefone novosDados = new Telefone();
         novosDados.setId(telefoneId);

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Endereco;
+import com.autobots.automanager.excecoes.ConflitoDeRecursoException;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.modelo.dto.endereco.EnderecoDTO;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
 
@@ -16,10 +18,10 @@ public class CadastradorEnderecoServico {
 
     public Endereco cadastrar(Long clienteId, EnderecoDTO dto) {
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         if (cliente.getEndereco() != null) {
-            throw new IllegalArgumentException("Cliente ja possui endereco cadastrado");
+            throw new ConflitoDeRecursoException("Cliente ja possui endereco cadastrado");
         }
 
         Endereco endereco = new Endereco();

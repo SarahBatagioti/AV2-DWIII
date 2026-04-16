@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Endereco;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.modelo.atualizadores.endereco.EnderecoAtualizador;
 import com.autobots.automanager.modelo.dto.endereco.EnderecoDTO;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
@@ -19,11 +20,11 @@ public class AtualizadorEnderecoServico {
 
     public Endereco atualizar(Long clienteId, EnderecoDTO dto) {
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         Endereco enderecoExistente = cliente.getEndereco();
         if (enderecoExistente == null) {
-            throw new IllegalArgumentException("Endereco nao encontrado para este cliente");
+            throw new RecursoNaoEncontradoException("Endereco nao encontrado para este cliente");
         }
 
         Endereco novosDados = new Endereco();

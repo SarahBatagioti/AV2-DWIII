@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Documento;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
 import com.autobots.automanager.modelo.dto.documento.DocumentoDTO;
 import com.autobots.automanager.modelo.atualizadores.documento.DocumentoAtualizador;
 import com.autobots.automanager.repositorios.ClienteRepositorio;
@@ -19,12 +20,12 @@ public class AtualizadorDocumentoServico {
 
     public Documento atualizar(Long clienteId, Long documentoId, DocumentoDTO dto) {
         Cliente cliente = clienteRepositorio.findById(clienteId)
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         Documento documentoExistente = cliente.getDocumentos().stream()
             .filter(doc -> doc.getId().equals(documentoId))
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Documento nao encontrado neste cliente"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Documento nao encontrado neste cliente"));
 
         Documento novosDados = new Documento();
         novosDados.setTipo(dto.getTipo());
