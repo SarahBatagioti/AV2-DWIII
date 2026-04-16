@@ -1,6 +1,9 @@
 package com.autobots.automanager.controles;
 
 import java.util.List;
+import java.net.URI;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.autobots.automanager.entidades.Telefone;
 import com.autobots.automanager.modelo.dto.telefone.TelefoneDTO;
@@ -50,15 +54,20 @@ public class TelefoneControle {
     }
 
     @PostMapping
-    public ResponseEntity<Telefone> cadastrar(@PathVariable Long clienteId, @RequestBody TelefoneDTO dto) {
+    public ResponseEntity<Telefone> cadastrar(@PathVariable Long clienteId, @Valid @RequestBody TelefoneDTO dto) {
         Telefone criado = cadastrador.cadastrar(clienteId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{telefoneId}")
+                .buildAndExpand(criado.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(criado);
     }
 
     @PutMapping("/{telefoneId}")
     public ResponseEntity<Telefone> atualizar(@PathVariable Long clienteId,
                                               @PathVariable Long telefoneId,
-                                              @RequestBody TelefoneDTO dto) {
+                                              @Valid @RequestBody TelefoneDTO dto) {
         Telefone atualizado = atualizador.atualizar(clienteId, telefoneId, dto);
         return ResponseEntity.ok(atualizado);
     }

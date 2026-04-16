@@ -1,11 +1,15 @@
 package com.autobots.automanager.controles;
 
 import java.util.List;
+import java.net.URI;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.autobots.automanager.entidades.Documento;
 import com.autobots.automanager.modelo.dto.documento.DocumentoDTO;
@@ -43,15 +47,20 @@ public class DocumentoControle {
     }
 
     @PostMapping
-    public ResponseEntity<Documento> cadastrar(@PathVariable Long clienteId, @RequestBody DocumentoDTO dto) {
+    public ResponseEntity<Documento> cadastrar(@PathVariable Long clienteId, @Valid @RequestBody DocumentoDTO dto) {
         Documento criado = cadastrador.cadastrar(clienteId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{documentoId}")
+                .buildAndExpand(criado.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(criado);
     }
 
     @PutMapping("/{documentoId}")
     public ResponseEntity<Documento> atualizar(@PathVariable Long clienteId,
                                                @PathVariable Long documentoId,
-                                               @RequestBody DocumentoDTO dto) {
+                                               @Valid @RequestBody DocumentoDTO dto) {
         Documento atualizado = atualizador.atualizar(clienteId, documentoId, dto);
         return ResponseEntity.ok(atualizado);
     }

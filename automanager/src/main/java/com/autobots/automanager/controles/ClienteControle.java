@@ -1,6 +1,9 @@
 package com.autobots.automanager.controles;
 
 import java.util.List;
+import java.net.URI;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.modelo.dto.cliente.ClienteAtualizacaoDTO;
@@ -51,13 +55,18 @@ public class ClienteControle {
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> cadastrarCliente(@RequestBody ClienteCadastroDTO cliente) {
+    public ResponseEntity<Cliente> cadastrarCliente(@Valid @RequestBody ClienteCadastroDTO cliente) {
         Cliente clienteCriado = cadastrador.cadastrar(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(clienteCriado);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(clienteCriado.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(clienteCriado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @RequestBody ClienteAtualizacaoDTO atualizacao) {
+    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @Valid @RequestBody ClienteAtualizacaoDTO atualizacao) {
         atualizacao.setId(id);
         Cliente clienteAtualizado = atualizador.atualizar(atualizacao);
         return ResponseEntity.ok(clienteAtualizado);

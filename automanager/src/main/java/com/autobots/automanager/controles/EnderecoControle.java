@@ -1,5 +1,9 @@
 package com.autobots.automanager.controles;
 
+import java.net.URI;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.autobots.automanager.entidades.Endereco;
 import com.autobots.automanager.modelo.dto.endereco.EnderecoDTO;
@@ -42,13 +47,14 @@ public class EnderecoControle {
     }
 
     @PostMapping
-    public ResponseEntity<Endereco> cadastrar(@PathVariable Long clienteId, @RequestBody EnderecoDTO dto) {
+    public ResponseEntity<Endereco> cadastrar(@PathVariable Long clienteId, @Valid @RequestBody EnderecoDTO dto) {
         Endereco criado = cadastrador.cadastrar(clienteId, dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(criado);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(criado);
     }
 
     @PutMapping
-    public ResponseEntity<Endereco> atualizar(@PathVariable Long clienteId, @RequestBody EnderecoDTO dto) {
+    public ResponseEntity<Endereco> atualizar(@PathVariable Long clienteId, @Valid @RequestBody EnderecoDTO dto) {
         Endereco atualizado = atualizador.atualizar(clienteId, dto);
         return ResponseEntity.ok(atualizado);
     }
