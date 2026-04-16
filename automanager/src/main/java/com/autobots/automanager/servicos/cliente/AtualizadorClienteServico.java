@@ -10,6 +10,8 @@ import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.entidades.Documento;
 import com.autobots.automanager.entidades.Endereco;
 import com.autobots.automanager.entidades.Telefone;
+import com.autobots.automanager.excecoes.RecursoNaoEncontradoException;
+import com.autobots.automanager.excecoes.RequisicaoInvalidaException;
 import com.autobots.automanager.modelo.atualizadores.cliente.ClienteAtualizador;
 import com.autobots.automanager.modelo.dto.cliente.ClienteAtualizacaoDTO;
 import com.autobots.automanager.modelo.dto.documento.DocumentoDTO;
@@ -98,11 +100,11 @@ public class AtualizadorClienteServico {
 
     public Cliente atualizar(ClienteAtualizacaoDTO dto) {
         if (dto.getId() == null) {
-            throw new IllegalArgumentException("Id оbrіgаtоrіо pаrа аtuаlіzаçãо");
+            throw new RequisicaoInvalidaException("Id obrigatorio para atualizacao");
         }
 
         Cliente cliente = repositorio.findById(dto.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Cliente nao encontrado"));
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente nao encontrado"));
 
         Cliente entidadeAtualizacao = new Cliente();
         entidadeAtualizacao.setNome(dto.getNome());

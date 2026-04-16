@@ -63,30 +63,8 @@ public class TratadorGlobalDeExcecoes {
         return responder(HttpStatus.CONFLICT, "Os dados informados entram em conflito com um registro existente", request);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErroResposta> tratarIllegalArgument(
-            IllegalArgumentException ex,
-            HttpServletRequest request) {
-        HttpStatus status = classificarIllegalArgument(ex.getMessage());
-        return responder(status, ex.getMessage(), request);
-    }
-
     private String formatarErroDeCampo(FieldError erro) {
         return erro.getField() + ": " + erro.getDefaultMessage();
-    }
-
-    private HttpStatus classificarIllegalArgument(String mensagem) {
-        if (mensagem == null) {
-            return HttpStatus.BAD_REQUEST;
-        }
-        String mensagemNormalizada = mensagem.toLowerCase();
-        if (mensagemNormalizada.contains("nao encontrado")) {
-            return HttpStatus.NOT_FOUND;
-        }
-        if (mensagemNormalizada.contains("ja possui")) {
-            return HttpStatus.CONFLICT;
-        }
-        return HttpStatus.BAD_REQUEST;
     }
 
     private ResponseEntity<ApiErroResposta> responder(HttpStatus status, String mensagem, HttpServletRequest request) {
