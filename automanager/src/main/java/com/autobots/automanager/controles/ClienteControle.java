@@ -1,12 +1,12 @@
 package com.autobots.automanager.controles;
 
-import java.util.List;
 import java.net.URI;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.autobots.automanager.entidades.Cliente;
 import com.autobots.automanager.modelo.dto.cliente.ClienteAtualizacaoDTO;
 import com.autobots.automanager.modelo.dto.cliente.ClienteCadastroDTO;
+import com.autobots.automanager.montadores.ClienteModelAssembler;
 import com.autobots.automanager.servicos.cliente.AtualizadorClienteServico;
 import com.autobots.automanager.servicos.cliente.CadastradorClienteServico;
 import com.autobots.automanager.servicos.cliente.ConsultadorClienteServico;
@@ -42,34 +43,36 @@ public class ClienteControle {
     @Autowired
     private RemovedorClienteServico removedor;
 
+    @Autowired
+    private ClienteModelAssembler assembler;
+
     @GetMapping("/{id}")
-    public ResponseEntity<Cliente> obterCliente(@PathVariable Long id) {
+    public ResponseEntity<EntityModel<Cliente>> obterCliente(@PathVariable Long id) {
         Cliente cliente = consultador.buscarPorId(id);
-        return ResponseEntity.ok(cliente);
+        return ResponseEntity.ok(assembler.toModel(cliente));
     }
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> obterClientes() {
-        List<Cliente> clientes = consultador.listar();
-        return ResponseEntity.ok(clientes);
+    public ResponseEntity<CollectionModel<EntityModel<Cliente>>> obterClientes() {
+        return ResponseEntity.ok(assembler.toCollectionModel(consultador.listar()));
     }
 
     @PostMapping
-    public ResponseEntity<Cliente> cadastrarCliente(@Valid @RequestBody ClienteCadastroDTO cliente) {
+    public ResponseEntity<EntityModel<Cliente>> cadastrarCliente(@Valid @RequestBody ClienteCadastroDTO cliente) {
         Cliente clienteCriado = cadastrador.cadastrar(cliente);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(clienteCriado.getId())
                 .toUri();
-        return ResponseEntity.created(location).body(clienteCriado);
+        return ResponseEntity.created(location).body(assembler.toModel(clienteCriado));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> atualizarCliente(@PathVariable Long id, @Valid @RequestBody ClienteAtualizacaoDTO atualizacao) {
+    public ResponseEntity<EntityModel<Cliente>> atualizarCliente(@PathVariable Long id, @Valid @RequestBody ClienteAtualizacaoDTO atualizacao) {
         atualizacao.setId(id);
         Cliente clienteAtualizado = atualizador.atualizar(atualizacao);
-        return ResponseEntity.ok(clienteAtualizado);
+        return ResponseEntity.ok(assembler.toModel(clienteAtualizado));
     }
 
     @DeleteMapping("/{id}")
