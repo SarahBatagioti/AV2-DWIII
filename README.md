@@ -1,4 +1,4 @@
-![Banner AutoBots](img/bannerAutobots.png)
+﻿![Banner AutoBots](img/bannerAutobots.png)
 
 O AutoBots é um sistema de gestão especializado para lojas de manutenção veicular e venda de autopeças. O projeto surge em um cenário de alta demanda e valorização do mercado de veículos usados no Brasil, onde a agilidade na gestão e a excelência no atendimento ao cliente tornaram-se diferenciais competitivos essenciais.
 
@@ -74,3 +74,8 @@ Para testar todos os endpoints da API de forma completa, consulte o guia detalha
 
 👉 [Clique aqui para ver exemplos completos de todas as requisições](EXEMPLOS_API.md)
 
+## Status do CI
+
+Este projeto possui CI com GitHub Actions em modo multi-OS. A cada push, o pipeline configura o Java, executa o build e valida os testes com Maven em Linux, Windows e macOS. Com o badge em verde, fica visível que o projeto foi validado com sucesso nos 3 sistemas operacionais.
+
+[![Multi-OS CI](https://github.com/SarahBatagioti/AV2-DWIII/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/SarahBatagioti/AV2-DWIII/actions/workflows/ci.yml?query=branch%3Amain+event%3Apush)

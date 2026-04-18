@@ -1,6 +1,13 @@
 package com.autobots.automanager;
 
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.io.File;
 import java.util.Calendar;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -19,7 +26,69 @@ import com.autobots.automanager.repositorios.ClienteRepositorio;
 public class AutomanagerApplication {
 
 	public static void main(String[] args) {
+		emitStartupBeep();
 		SpringApplication.run(AutomanagerApplication.class, args);
+	}
+
+	private static void emitStartupBeep() {
+		if ("true".equalsIgnoreCase(System.getenv("CI"))) {
+			return;
+		}
+
+		if (tryPlayCustomSound()) {
+			return;
+		}
+
+		System.out.print("\u0007");
+		System.out.flush();
+
+		if (!GraphicsEnvironment.isHeadless()) {
+			try {
+				Toolkit.getDefaultToolkit().beep();
+			} catch (RuntimeException exception) {
+			}
+		}
+	}
+
+	private static boolean tryPlayCustomSound() {
+		File soundFile = resolveStartupSoundFile();
+		if (!soundFile.isFile()) {
+			return false;
+		}
+
+		Thread playerThread = new Thread(() -> {
+			try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile)) {
+				Clip clip = AudioSystem.getClip();
+				clip.open(audioInputStream);
+				clip.start();
+			} catch (Exception exception) {
+			}
+		}, "startup-sound-player");
+		playerThread.setDaemon(true);
+		playerThread.start();
+
+		return true;
+	}
+
+	private static File resolveStartupSoundFile() {
+		String soundFilePath = System.getenv("AUTOBOTS_STARTUP_SOUND");
+		if (soundFilePath != null && !soundFilePath.isBlank()) {
+			return new File(soundFilePath);
+		}
+
+		String[] defaultCandidates = {
+			"assets/smb_stage_clear.wav",
+			"../assets/smb_stage_clear.wav"
+		};
+
+		for (String candidatePath : defaultCandidates) {
+			File candidateFile = new File(candidatePath);
+			if (candidateFile.isFile()) {
+				return candidateFile;
+			}
+		}
+
+		return new File(defaultCandidates[0]);
 	}
 
 	@Component
