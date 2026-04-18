@@ -1,4 +1,4 @@
-﻿![Banner AutoBots](img/bannerAutobots.png)
+﻿![Banner AutoBots](assets\bannerAutobots.png)
 
 O AutoBots é um sistema de gestão especializado para lojas de manutenção veicular e venda de autopeças. O projeto surge em um cenário de alta demanda e valorização do mercado de veículos usados no Brasil, onde a agilidade na gestão e a excelência no atendimento ao cliente tornaram-se diferenciais competitivos essenciais.
 
